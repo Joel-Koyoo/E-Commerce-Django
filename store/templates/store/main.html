@@ -17,11 +17,11 @@
 
 
         function getToken(name) {
-            let cookieValue = null;
+            var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
-                let cookies = document.cookie.split(',');
-                for (let i = 0; i < cookies[i].length; i++) {
-                    let cookie = cookies[i].trim();
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies[i].length; i++) {
+                    var cookie = cookies[i].trim();
                     if (cookie.substring(0, name.length + 1) === (name + '=')) {
                         cookieValue = decodeURIComponent(cookie.substring(
                             name.length + 1
@@ -82,7 +82,7 @@
                 <a href="#" class="btn btn-warning">Login</a>
 
                 <a href="{%url 'cart'%}">
-                    <img src="  " alt="" id="cart-icon">
+                    <img src="{%static 'images'%}" alt="" id="cart-icon">
                 </a>
                 <p id="cart-total">{{cartItems}}</p>
             </div>
