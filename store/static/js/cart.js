@@ -23,7 +23,7 @@ function updateUserOrder(productID, action) {
       "Content-Type": "application/json",
       "X-CSRFToken": csrftoken,
     },
-    body: JSON.stringify({ 'productID': productID, 'action': action }),
+    body: JSON.stringify({ productID: productID, action: action }),
   })
     .then((response) => {
       return response.json();
@@ -54,4 +54,7 @@ function addCookieItem(productID, action) {
       delete cart[productID];
     }
   }
+  console.log('Cart: ', cart)
+  document.cookie = "cart=" + JSON.stringify(cart) + ";domain=;path=/";
+  // location.reload()
 }
