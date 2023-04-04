@@ -1,21 +1,130 @@
-{%extends 'store/main.html'%}
-{%load static%}
-{%block content%}
-<div class="row">
-    {%for product in products%}
-    <div class="col-lg-4">
-        <img class="thumbnail" src="{{product.imageURL}}" alt="">
-        <div class="box-element product">
-            <h6><strong>{{product.name}}</strong></h6>
-            <hr>
-            <button data-product="{{product.id}}" data-action="add"
-                class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
-            <a href="#" class="btn btn-outline-success">View</a>
-            <h4 style="float:right"><strong>${{product.price|floatformat:2}}</strong></h4>
-        </div>
-     
-    </div>
+{% extends 'store/main.html' %}
+{% load static %}
 
-    {%endfor%}
+{% block content %}
+
+<style>
+ .upload-icon {
+    position: fixed;
+    top: 150px;
+    left: 20px;
+    font-size: 2em;
+    color: #222;
+    animation: pulse 1.5s infinite ease-in-out;
+    z-index: 999;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.5);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+</style>
+<!-- Add the required CSS and JavaScript files -->
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+<div class="row">
+
+  {% if request.user.is_authenticated %}
+  <a href="{% url 'add_product' %}">
+    <div class="upload-icon">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <p style="font-size: 12px;">Upload Items</p>
+    </div>
+  </a>
+{% else %}
+  <a href="#" onclick="alert('Please log in to upload items.'); window.location.href='{% url 'login' %}'">
+    <div class="upload-icon">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <p style="font-size: 12px;">Upload Items</p>
+    </div>
+  </a>
+{% endif %}
+    
+  {% for product in products %}
+  <div class="col-lg-4">
+    <img class="thumbnail" src="{{product.imageURL}}" alt="">
+    <div class="box-element product">
+      <h6><strong>{{product.name}}</strong></h6>
+      <hr>
+      <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+      <a href="#" class="btn btn-outline-success view-btn" data-toggle="modal" data-target="#productModal" data-image="{{product.image.url}}" data-name="{{product.name}}" data-price="{{product.price}}">View</a>
+      <h4 style="float:right"><strong>Kes: {{product.price|floatformat:2}}</strong></h4>
+    </div>
+  </div>
+  {% endfor %}
 </div>
+
+<!-- Add the product modal dialog box -->
+<div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="productModalLabel"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="productCarousel" class="carousel slide" data-ride="carousel">
+          <ol class="carousel-indicators"></ol>
+          <div class="carousel-inner"></div>
+          <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+          </a>
+        </div>
+        <div class="row mt-2">
+          <div class="col-12">
+            <h4 class="float-left" id="productPrice"></h4>
+            <button data-product="" data-action="add" class="btn btn-outline-secondary add-btn update-cart float-right">Add to Cart</button>
+            <a href="" class="btn btn-success">Send message on WhatsApp</a>
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    $('#productModal').on('show.bs.modal', function(e) {
+      var button = $(e.relatedTarget);
+      var whatsappNumber = button.data('whatsapp');
+      var chatButton = $(this).find('.view-btn[data-whatsapp="'+whatsappNumber+'"]');
+      chatButton.attr('href', 'https://wa.me/' + whatsappNumber);
+    });
+  });
+</script>
+
+<script>
+     $(document).ready(function() {
+  $('.view-btn').on('click', function() {
+    var image = $(this).data('image');
+    console.log(image); // add this line
+    console.log("exc")
+    $('#productModal .carousel-inner').html('<div class="carousel-item active"><img src="' + image + '" class="d-block w-100"></div>');
+  });
+});
+
+
+  </script>
+  
 {%endblock content%}
