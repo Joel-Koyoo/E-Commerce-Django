@@ -48,6 +48,16 @@ class Product(models.Model):
     )
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT, related_name="collection_product")
     posted_by = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer_phone_number = models.CharField(
+        max_length=14,
+        validators=[RegexValidator(
+            regex=r'^\+254\d{9}$',
+            message='Enter a valid Kenyan phone number starting with "+254"',
+            code='invalid_phone_number'
+        )],
+        blank=True,
+        null=True
+    )
 
     def __str__(self):
         return self.name

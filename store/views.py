@@ -37,7 +37,7 @@ from django.contrib.auth.decorators import login_required
 
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('/')
 
 
 def signup(request):
@@ -89,6 +89,7 @@ def add_product(request):
             product = form.save(commit=False)
             # set the posted_by field to the current user
             product.posted_by = request.user.customer
+            product.customer_phone_number = request.user.customer.whatsapp_number
             product.save()
             # or wherever you want to redirect after a successful submission
             return redirect('/')
@@ -105,14 +106,29 @@ def store(request):
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
     else:
-        items = []
-        order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
-        cartItems = order['get_cart_items']
+        cookieData = cookieCart(request)
+        cartItems = cookieData['cartItems']
+        order = cookieData['order']
+        items = cookieData['items']
 
     products = Product.objects.all()
+    for product in products:
+        product.collection_name = product.collection.name
+
     context = {'products': products, 'cartItems': cartItems}
     return render(request, 'store/store.html', context)
 
+
+def get_products_by_collection(request, collection_id):
+    collection = get_object_or_404(Collection, pk=collection_id)
+    products = Product.objects.filter(collection=collection)
+    data = [{
+        'id': p.id,
+        'name': p.name,
+        'imageURL': p.imageURL,
+        'price': p.price
+    } for p in products]
+    return JsonResponse(data, safe=False)
 
 def cart(request):
     if request.user.is_authenticated:

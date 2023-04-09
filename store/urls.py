@@ -12,6 +12,9 @@ urlpatterns = [
     path('cart/', views.cart, name="cart"),
     path('update_item/', views.updateItem, name="update_item"),
     path('process_order/', views.processOrder, name="process_order"),
+    path('get_products_by_collection/<int:collection_id>/', views.get_products_by_collection, name='get_products_by_collection'),
+
+
     # path('send-whatsapp/<int:product_id>/', views.send_whatsapp_message, name='send_whatsapp_message'),
 
 ]
